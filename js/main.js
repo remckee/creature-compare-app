@@ -7,14 +7,12 @@
 
 // check mode and update the text of the input labels accordingly
 function changeInputLabels() {
-    console.log("changed");
-    var modeSelect = document.getElementById('mode-selection');
-    if (modeSelect.value == "2-creature") {
-        document.getElementById('searchbox-1-label').textContent = "creature 1:";
-        document.getElementById('searchbox-2-label').textContent = "creature 2:";
+    if ($('#mode-selection').val() == "2-creature") {
+        $('#searchbox-1-label').text("creature 1:");
+        $('#searchbox-2-label').text("creature 2:");
     } else {
-        document.getElementById('searchbox-1-label').textContent = "creature:";
-        document.getElementById('searchbox-2-label').textContent = "feature:";
+        $('#searchbox-1-label').text("creature:");
+        $('#searchbox-2-label').text("feature:");
     }
 }
 
@@ -36,6 +34,11 @@ $(document).ready(function(){
     $("#mode-selection").change(function(){
         changeInputLabels();
 
+    });
+
+    $("#user-input-form").submit(function(event){
+        event.preventDefault();
+        location = "./two-creature-results.html";
     });
 
 });
