@@ -38,7 +38,24 @@ $(document).ready(function(){
 
     $("#user-input-form").submit(function(event){
         event.preventDefault();
-        location = "./two-creature-results.html";
+        
+        
+        // go to different page and use services differently depending on current mode setting
+        if ($('#mode-selection').val() == "2-creature") {
+            // get form values
+            // request html parsers
+            // request image parsers
+            
+            // navigate to results page
+            location = "./two-creature-results.html";
+        } else {
+            // get form values
+            // request html parser
+            // request image parser
+            
+            // navigate to results page
+            location = "./one-creature-results.html";
+        }
     });
 
 });
