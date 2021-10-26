@@ -4,6 +4,7 @@
 #unignore things we want to track
 !*/
 !*.gitignore
+!*.md
 !*.html
 !*.css
 !*.js
