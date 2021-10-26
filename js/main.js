@@ -38,23 +38,26 @@ $(document).ready(function(){
 
     $("#user-input-form").submit(function(event){
         event.preventDefault();
-        
-        
+                
+        // get form values
+        var search_box_1 = $('#searchbox-1').val();
+        var search_box_2 = $('#searchbox-2').val();
+        console.log(search_box_1);
+        console.log(search_box_2);
+                
         // go to different page and use services differently depending on current mode setting
         if ($('#mode-selection').val() == "2-creature") {
-            // get form values
-            // request html parsers
-            // request image parsers
-            
+            // validate, sanitize
+            // search Wikipedia
+ 
             // navigate to results page
-            location = "./two-creature-results.html";
+            location = "./two-creature-results.html/?first=" + search_box_1 + "&second=" + search_box_2;
         } else {
-            // get form values
-            // request html parser
-            // request image parser
+            // validate, sanitize
+            // search Wikipedia
             
             // navigate to results page
-            location = "./one-creature-results.html";
+            location = "./one-creature-results.html/?first=" + search_box_1 + "&second=" + search_box_2;
         }
     });
 
