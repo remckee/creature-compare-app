@@ -22,6 +22,7 @@
 
         </nav>-->
         <main class="pt-4">
+            <!-- modal -->
             <div id="info-modal" tabindex="-1" class="modal modal-dialog-scrollable fade" style="display:none;" aria-labelledby="info-modal-label" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -40,6 +41,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="container">
                 <form id="user-input-form" name="user-input-form" class="needs-validation" action="" method="post"  novalidate="novalidate"><!--aria-describedby="form-instructions"-->
                     <div class="row mb-4">
@@ -50,18 +52,18 @@
                               <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                             </svg>
                         </button>
-                        <select id="mode-selection" class="form-select" aria-label="mode selection drop down">
-                            <option selected value="1">2 creature mode</option>
-                            <option value="2">1 creature 1 feature mode</option>
+                        <select id="mode-selection" name="mode-selection" class="form-select" aria-label="mode selection drop down">
+                            <option selected value="2-creature">2 creature mode</option>
+                            <option value="1-creature">1 creature 1 feature mode</option>
                         </select>
                     </div>
                     <div class="row mb-4">
-                        <label for="searchbox-1" class="form-label col-auto m-0 pb-1">creature 1:</label>
-                        <input id="searchbox-1" type="search" spellcheck="true">
+                        <label for="searchbox-1" id="searchbox-1-label" class="form-label col-auto m-0 pb-1">creature 1:</label>
+                        <input id="searchbox-1" name="searchbox-1" type="search" spellcheck="true">
                     </div>   
                     <div class="row mb-4">
-                        <label for="searchbox-2" class="form-label col-auto m-0 pb-1">creature 2:</label>
-                        <input id="searchbox-2" type="search" spellcheck="true">
+                        <label for="searchbox-2" id="searchbox-2-label" class="form-label col-auto m-0 pb-1">creature 2:</label>
+                        <input id="searchbox-2" name="searchbox-2" type="search" spellcheck="true">
                     </div>   
                     <div class="row mb-4">
                         <input type="submit" value="Submit"
