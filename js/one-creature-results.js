@@ -12,7 +12,8 @@ $(document).ready(function(){
     console.log(first);
     console.log(second);
     
-    $('h1').text("Info about " + first + " and " + second);
+    // update header with user-entered values
+    //$('h1').text("Info about " + first + " and " + second);
 
     // request html parser
     // request image parser

@@ -10,3 +10,16 @@
     text-align: center;
 }
 
+a {
+    text-decoration: underline;
+}
+
+a:hover, a:focus, a:active, a:visited {
+    text-decoration: none;
+}
+
+.external-icon {
+    margin-left: 0.25rem;
+    width: 0.75rem;
+}
+
