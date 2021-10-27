@@ -7,13 +7,13 @@
 
 $(document).ready(function(){
     let params = new URLSearchParams(document.location.search.substring(1));
-    let first = params.get("first"); 
-    let second = params.get("second");
-    console.log(first);
-    console.log(second);
+    let creature = params.get("first"); 
+    let feature = params.get("second");
+    console.log("creature: " + creature);
+    console.log("feature: " + feature);
     
     // update header with user-entered values
-    //$('h1').text("Info about " + first + " and " + second);
+    //$('h1').text("Info about " + creature + " and " + feature);
 
     // request html parser
     // request image parser
