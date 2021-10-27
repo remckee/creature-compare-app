@@ -11,8 +11,9 @@ $(document).ready(function(){
     let second = params.get("second");
     console.log(first);
     console.log(second);
-    
-    $('h1').text("Classification of " + first + " and " + second);
+
+    // update header with user-entered values
+    //$('h1').text("Classification of " + first + " and " + second);
      
     // request html parsers
     // request image parsers
