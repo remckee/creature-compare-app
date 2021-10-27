@@ -6,8 +6,8 @@
 
 }
 
-.center {
-    text-align: center;
+.mark, mark {
+    background-color: var(--bs-yellow);
 }
 
 a {
@@ -16,6 +16,10 @@ a {
 
 a:hover, a:focus, a:active, a:visited {
     text-decoration: none;
+}
+
+.center {
+    text-align: center;
 }
 
 .external-icon {
