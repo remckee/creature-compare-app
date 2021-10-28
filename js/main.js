@@ -51,13 +51,13 @@ $(document).ready(function(){
             // search Wikipedia
  
             // navigate to results page
-            location = "./two-creature-results.html/?first=" + search_box_1 + "&second=" + search_box_2;
+            location = "./two-creature-results.html?first=" + search_box_1 + "&second=" + search_box_2;
         } else {
             // validate, sanitize
             // search Wikipedia
             
             // navigate to results page
-            location = "./one-creature-results.html/?first=" + search_box_1 + "&second=" + search_box_2;
+            location = "./one-creature-results.html?first=" + search_box_1 + "&second=" + search_box_2;
         }
     });
 
