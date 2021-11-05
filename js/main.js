@@ -45,6 +45,7 @@ $(document).ready(function(){
         console.log(search_box_1);
         console.log(search_box_2);
                 
+        //getPageTitle();
         // go to different page and use services differently depending on current mode setting
         if ($('#mode-selection').val() == "2-creature") {
             // validate, sanitize
