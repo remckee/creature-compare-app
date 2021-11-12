@@ -52,7 +52,15 @@ function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
         // function to send data to server
         function sendUrl(req) {
             if (connection.connected) {
-                connection.sendUTF(JSON.stringify(req));
+                console.log(req);
+                //connection.sendUTF(JSON.stringify(req));
+                // Encode the message and get its length
+                var message = JSON.stringify(req);
+                var msg_length =  message.length;
+                var send_length = msg_length.toString();
+                //send_length += (64 - send_length.length).toString();
+                connection.sendUTF(send_length);
+                connection.sendUTF(message);
             }
         }
         var req = {"URL" : url};
@@ -117,6 +125,7 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
         // function to send data to server
         function sendUrl(req) {
             if (connection.connected) {
+                console.log(req);
                 connection.sendUTF(JSON.stringify(req));
             }
         }
@@ -140,12 +149,12 @@ app.post('/results', (req, res) => {
     
     // call HTML scraper
     for (var i = 0; i < 2; i+=1) {
-        call_HTML_scraper(urls[i], results, res, i, 0, '8080');
+        call_HTML_scraper(urls[i], results, res, i, 0, 8080);
     }
 
     // call Image scraper
     for (var i = 0; i < 2; i+=1) {
-        call_Img_scraper(urls[i], results, res, i, 1, '5050');
+        call_Img_scraper(urls[i], results, res, i, 1, 5050);
     }
 
 });
