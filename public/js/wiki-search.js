@@ -11,35 +11,40 @@
 // that will be sent to a service.
 const initRequest = (url) => {
     let req = new XMLHttpRequest();
+    // let payload = {
+    //     "mode":         $('#mode_selection').val().trim(),
+    //     "searchbox_1":  $('#searchbox_1').val().trim(),
+    //     "searchbox_2":  $('#searchbox_2').val().trim()
+    // };
+    
+    // console.log("payload: "+payload.mode);
+    // let json = JSON.stringify(payload);
     req.open('GET', url, true);
     req.setRequestHeader("Content-Type", "application/json");
+    req.setRequestHeader("Access-Control-Allow-Origin", "*");
+    req.setRequestHeader("Access-Control-Allow-Methods", 
+      "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    req.setRequestHeader("Access-Control-Allow-Headers",
+      "Origin, Content-Type, X-Auth-Token");
     req.addEventListener('load', () => {
-        if (req.status >= 200 && req.status < 400) {
+        if(req.status>=200 && req.status<400){
             let data = JSON.parse(req.response);
-            console.log(data);
         };
     });
     req.send(null);
-};
-
-
-// uses Wikipedia API to find the title of the Wikipedia page 
-// that the value in param.srsearch redirects to
-async function getPageTitle(base_url, params) {
-    let url = base_url;
-    var page_title = "";
     
-    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
-
-    var response = await fetch(url)
-        .then((response) => {return response.json()})
-        .then((response) => {
-            if (response.query.search[0].title){
-                page_title = response.query.search[0].title;
-                console.log(page_title);
-                initRequest(encodeURI(`http://localhost:3000/${page_title}`));
-            }
-        })
-        .catch((error) => console.log(error));    
+    
+    // req.open("POST", url, true);
+    // req.setRequestHeader("Content-Type", "application/json");
+    // req.addEventListener("load", () => {
+    //     if (req.status >= 200 && req.status < 400) {
+    //         let data = JSON.parse(req.response);
+    //         console.log(data);
+    //     }
+    // });
+    //req.send(json);
 };
+
+
+
 

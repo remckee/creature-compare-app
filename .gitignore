@@ -2,7 +2,7 @@
 *
 
 #unignore things we want to track
-!*/
+!*public
 !*.gitignore
 !*.md
 !*.html
