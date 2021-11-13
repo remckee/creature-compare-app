@@ -58,7 +58,8 @@ function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
                 var message = JSON.stringify(req);
                 var msg_length =  message.length;
                 var send_length = msg_length.toString();
-                //send_length += (64 - send_length.length).toString();
+                send_length.padEnd((64 - send_length.length));
+                console.log('"'+send_length+'"');
                 connection.sendUTF(send_length);
                 connection.sendUTF(message);
             }
