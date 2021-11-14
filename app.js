@@ -6,7 +6,6 @@ const host = "localhost";   // change to "flip1.engr.oregonstate.edu"
 const https = require('https');
 const express = require('express');
 const app = express();
-//const port = 3000;
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -39,7 +38,7 @@ function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
         // when a message from the server is recieved
         connection.on('message', function message(data) {
             console.log('Received reply: \n%s', data);
-            results[ind][sub_ind] = JSON.parse(data);
+            results[ind][sub_ind] = data.utf8Data;
 
             if (results[0][0] != "" && results[1][0] != "" 
                 && results[0][1] != "" && results[1][1] != "") {
@@ -53,15 +52,7 @@ function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
         function sendUrl(req) {
             if (connection.connected) {
                 console.log(req);
-                //connection.sendUTF(JSON.stringify(req));
-                // Encode the message and get its length
-                var message = JSON.stringify(req);
-                var msg_length =  message.length;
-                var send_length = msg_length.toString();
-                send_length.padEnd((64 - send_length.length));
-                console.log('"'+send_length+'"');
-                connection.sendUTF(send_length);
-                connection.sendUTF(message);
+                connection.sendUTF(JSON.stringify(req));
             }
         }
         var req = {"URL" : url};
@@ -93,9 +84,7 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
                 console.log('Received reply: \n%s\n', data);
                 results[ind][sub_ind] = JSON.parse(data.utf8Data);
 
-                if (results[0][0] != "" && results[1][0] != "" 
-                    //&& results[0][1] != "" && results[1][1] != "" 
-                    ) {
+                if (results[0][0] != "" && results[1][0] != "") {
                     var category = "";
                     var arr0 = results[0][0].response;
                     var arr1 = results[1][0].response;
@@ -107,11 +96,6 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
                         }
                     }
                     results[2] = {"common_category": category};
-                    
-                    // if (results[0][1] != "" && results[1][1] != "") {
-                    //     res.send(results);
-                    // }
-                    
                 }
                 
                 if (results[0][0] != "" && results[1][0] != "" 
@@ -155,7 +139,7 @@ app.post('/results', (req, res) => {
 
     // call Image scraper
     for (var i = 0; i < 2; i+=1) {
-        call_Img_scraper(urls[i], results, res, i, 1, 5050);
+        call_Img_scraper(urls[i], results, res, i, 1, 5051);
     }
 
 });
