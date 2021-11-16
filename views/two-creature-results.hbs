@@ -1,0 +1,50 @@
+<main class="pt-4">
+    <div class="container">
+        <article class="mb-4 clearfix card">
+            <h1 class="card-header">Classification of {{creature_1}} and {{creature_2}}</h1>
+            <div class="card-body">
+                <section id="text-results" class="row">
+            <h2 class="card-title">
+                        {{category}}: {{taxon_name}}
+            </h2>
+            <p class="card-text p-3">
+                <b>{{creature_1}}</b> and <b>{{creature_2}}</b> are both members of the {{category_lower}} <i><a href="https://en.wikipedia.org/wiki/{{taxon_name}}" target="__blank" class="external-link">{{taxon_name}}<img class="external-icon" alt="(opens in new tab)" 
+                                    src="images/box-arrow-up-right.svg"></a></i>.		                
+            </p>
+                </section>
+                <section id="image-results" class="row justify-content-evenly">
+                    <div class="col-8 col-sm-6 col-lg-4 mb-4">
+                        <div class="card">
+                            <img src="{{creature_1_img}}" class="card-img-top" alt="{{creature_1}}">
+                            <div class="card-body">
+                                <h3 class="card-title">{{creature_1}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-8 col-sm-6 col-lg-4 mb-4">
+                        <div class="card">
+                            <img src="{{creature_2_img}}" class="card-img-top" alt="{{creature_2}}">
+                            <div class="card-body">
+                                <h3 class="card-title">{{creature_2}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <footer class="card-footer">
+                <p>Source: Adapted from <a href="https://en.wikipedia.org/wiki/{{creature_1}}" target="__blank" class="external-link">https://en.wikipedia.org/wiki/{{creature_1}}<img class="external-icon" alt="(opens in new tab)" 
+                                    src="images/box-arrow-up-right.svg"></a> and <a href="https://en.wikipedia.org/wiki/{{creature_2}}" target="__blank" class="external-link">https://en.wikipedia.org/wiki/{{creature_2}}<img class="external-icon" alt="(opens in new tab)" 
+                                    src="images/box-arrow-up-right.svg"></a></p>
+                <p>Text is available under the <a rel="license" href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License" target="__blank" class="external-link">Creative Commons Attribution-ShareAlike License<img class="external-icon" alt="(opens in new tab)" 
+                                    src="images/box-arrow-up-right.svg"></a>
+                    <a rel="license" href="//creativecommons.org/licenses/by-sa/3.0" style="display:none;"></a>;
+    additional terms may apply. Wikipedia® is a registered trademark of the <a href="https://www.wikimediafoundation.org" target="__blank" class="external-link">Wikimedia Foundation, Inc.<img class="external-icon" alt="(opens in new tab)" 
+                                    src="images/box-arrow-up-right.svg"></a>, a non-profit organization.
+                </p>
+            </footer>
+        </article>
+        <button id="prev-page-btn" type="button" class="btn btn-primary" >Return to previous page</button>
+    </div>
+</main>
+{{> page/footer}}
+{{> page/scripts}}

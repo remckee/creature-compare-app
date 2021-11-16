@@ -5,10 +5,19 @@ const host = "localhost";   // change to "flip1.engr.oregonstate.edu"
 
 const https = require('https');
 const express = require('express');
+const exphbs = require('express-handlebars');
 const app = express();
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+
+//const hbs = create();
+
+//hbs.partialsDir = 'views/partials/';
+exphbs.create({partialsDir: 'views/partials/'})
+app.engine('.hbs', exphbs.engine({extname: '.hbs'}));
+app.set('view engine', '.hbs');
+app.set("views", "./views");
 
 app.use(cors());
 app.use(express.json());
@@ -18,10 +27,33 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use('/', express.static(path.join(__dirname, 'public')));
 
-
 const nonempty = (el) => el != "";
 
-function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
+
+function render_results(res, results) {
+    if (results.mode_selection=="2-creature") {
+        res.render('two-creature-results', {
+            title: "- Results",
+            script: "results.js",
+            creature_1: results.creatures[0].name,
+            creature_2: results.creatures[1].name,
+            category: results.common_category.category,
+            category_lower: results.common_category.category.toLowerCase(),
+            taxon_name: results.common_category.taxon_name,
+            creature_1_img: results.creatures[0].img,
+            creature_2_img: results.creatures[1].img
+        });
+    } else if (results.mode_selection=="1-creature") {
+        res.render('one-creature-results', {
+            title: "- Results",
+            script: "results.js",
+        });
+    }
+
+}
+
+
+function call_Img_scraper(results, res, ind, server_port) {
     var client = new WebSocketClient();
 
     // if connection fails, log an error
@@ -47,16 +79,18 @@ function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
 
             // Select the appropriate url, and make sure it begins with 'https://'.
             var prefix = 'https:';
-            var out_url = (img_urls[1].toLowerCase().includes('semi-protection-shackle')) ? img_urls[2] : img_urls[1];
+            //var out_url = (img_urls[1].toLowerCase().includes('semi-protection-shackle')) ? img_urls[2] : img_urls[1];
+            var out_url = img_urls[2];
             if (out_url.slice(0, prefix.length) != prefix) {
                 out_url = `${prefix}//${out_url}`;
             }
 
-            results[ind][sub_ind] = out_url;
+            results.creatures[ind].img = out_url;
 
-            // Send results to browser if all scaper calls have stored their results.
-            if (results[0].every(nonempty) && results[1].every(nonempty)) {
-                res.send(results);
+            if (results.creatures[0].taxon != "" && results.creatures[1].taxon != ""
+                  & results.creatures[0].img != "" && results.creatures[1].img != "") {
+                //res.send(results);
+                render_results(res, results);
             }
 
             connection.close();
@@ -69,7 +103,7 @@ function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
                 connection.sendUTF(JSON.stringify(req));
             }
         }
-        var req = {"URL" : url};
+        var req = {"URL" : results.creatures[ind].url};
         sendUrl(req);
     });
 
@@ -77,7 +111,7 @@ function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
 }
 
 
-function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
+function call_HTML_scraper(results, res, ind, server_port) {
     var client = new WebSocketClient();
 
     // if connection fails, log an error
@@ -96,12 +130,14 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
         connection.on('message', function message(data) {
             if (data.type === 'utf8') {
                 console.log('Received reply: \n%s\n', data);
-                results[ind][sub_ind] = JSON.parse(data.utf8Data);
+                
+                var taxon = JSON.parse(data.utf8Data).response;
+                results.creatures[ind].taxon = taxon;
 
-                if (results[0][0] != "" && results[1][0] != "") {
+                if (results.creatures[0].taxon != "" && results.creatures[1].taxon != "") {
                     var category = [];
-                    var arr0 = results[0][0].response;
-                    var arr1 = results[1][0].response;
+                    var arr0 = results.creatures[0].taxon;
+                    var arr1 = results.creatures[1].taxon;
                     var min_len = (arr0.length < arr1.length) ? arr0.length : arr1.length;
                     
                     for (var i = 0; i < min_len; i+=1) {
@@ -114,11 +150,14 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
                             category = parts[0];
                         }
                     }
-                    results[2] = {"common_category": category};
+                    results.common_category.category = category[0];
+                    results.common_category.taxon_name = category[1];
                 }
                 
-                if (results[0].every((el) => el != "") && results[1].every((el) => el != "")) {
-                    res.send(results);
+                if (results.creatures[0].taxon != "" && results.creatures[1].taxon != ""
+                      & results.creatures[0].img != "" && results.creatures[1].img != "") {
+                    //res.send(results);
+                    render_results(res, results);
                 }
 
                 connection.close();
@@ -132,7 +171,7 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
                 connection.sendUTF(JSON.stringify(req));
             }
         }
-        var req = {"url" : url};
+        var req = {"url" : results.creatures[ind].url};
         sendUrl(req);
     });
 
@@ -140,23 +179,49 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
 }
 
 
+// render home page
+app.get('/', (req, res, next) => {
+    res.render('index', {
+        title: "",
+        script: "main.js"
+    });
+});
+
+
+
 app.post('/results', (req, res) => {
     let data = req.body;
     
-    var urls = [encodeURI(`https://en.wikipedia.org/wiki/${data.searchbox_1_title}`),
-                  encodeURI(`https://en.wikipedia.org/wiki/${data.searchbox_2_title}`)];
-    
-    console.log(urls);
-    var results = [[""], [""], ""];
+    var results = {
+        "creatures": 
+        [{
+            name: data.searchbox_1,
+            url: encodeURI(`https://en.wikipedia.org/wiki/${data.searchbox_1_title}`),
+            taxon: "",
+            img: ""
+        },
+        {
+            name: data.searchbox_2,
+            url: encodeURI(`https://en.wikipedia.org/wiki/${data.searchbox_2_title}`),
+            taxon: "",
+            img: ""
+        }],
+        "common_category": 
+        {
+            category: "",
+            taxon_name: ""
+        },
+        "mode_selection": data.mode_selection
+    };
     
     // call HTML scraper
     for (var i = 0; i < 2; i+=1) {
-        call_HTML_scraper(urls[i], results, res, i, 0, 8080);
+        call_HTML_scraper(results, res, i, 8080);
     }
 
     // call Image scraper
     for (var i = 0; i < 2; i+=1) {
-        call_Img_scraper(urls[i], results, res, i, 1, 5051);
+        call_Img_scraper(results, res, i, 5051);
     }
 
 });
