@@ -22,6 +22,9 @@ function changeInputLabels() {
 async function getPageTitle(base_url, params, id, title) {
     let url = base_url;
     var page_title = title;
+    var first_let = page_title.charAt(0).toUpperCase();
+    page_title = page_title.replace(page_title.charAt(0), first_let);
+    console.log("cap: ", page_title);
     //initRequest(encodeURI(`http://localhost:8080/results/${page_title}`));
     // Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
 
