@@ -19,6 +19,7 @@ app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 
+const nonempty = (el) => el != "";
 
 function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
     var client = new WebSocketClient();
@@ -38,10 +39,23 @@ function call_Img_scraper(url, results, res, ind, sub_ind, server_port) {
         // when a message from the server is recieved
         connection.on('message', function message(data) {
             console.log('Received reply: \n%s', data);
-            results[ind][sub_ind] = data.utf8Data;
 
-            if (results[0][0] != "" && results[1][0] != "" 
-                && results[0][1] != "" && results[1][1] != "") {
+            // Split url list on ', //' and only store the first three resulting strings,
+            // The first string will be '{"URL":[', so stores first 2 urls
+            var img_urls = data.utf8Data.split(/,? *\/\//, 3);
+
+
+            // Select the appropriate url, and make sure it begins with 'https://'.
+            var prefix = 'https:';
+            var out_url = (img_urls[1].toLowerCase().includes('semi-protection-shackle')) ? img_urls[2] : img_urls[1];
+            if (out_url.slice(0, prefix.length) != prefix) {
+                out_url = `${prefix}//${out_url}`;
+            }
+
+            results[ind][sub_ind] = out_url;
+
+            // Send results to browser if all scaper calls have stored their results.
+            if (results[0].every(nonempty) && results[1].every(nonempty)) {
                 res.send(results);
             }
 
@@ -85,21 +99,25 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
                 results[ind][sub_ind] = JSON.parse(data.utf8Data);
 
                 if (results[0][0] != "" && results[1][0] != "") {
-                    var category = "";
+                    var category = [];
                     var arr0 = results[0][0].response;
                     var arr1 = results[1][0].response;
                     var min_len = (arr0.length < arr1.length) ? arr0.length : arr1.length;
                     
                     for (var i = 0; i < min_len; i+=1) {
-                        if (arr0[i] == arr1[i]) {
-                            category = arr0[i];
+                        var parts = [];
+                        parts[0] = arr0[i].split(/:\t|\n/, 2);
+                        parts[1] = arr1[i].split(/:\t|\n/, 2);
+                        
+                        if (parts[0][0] == parts[1][0] 
+                          && parts[0][1] == parts[1][1]) {
+                            category = parts[0];
                         }
                     }
                     results[2] = {"common_category": category};
                 }
                 
-                if (results[0][0] != "" && results[1][0] != "" 
-                    && results[0][1] != "" && results[1][1] != "") {
+                if (results[0].every((el) => el != "") && results[1].every((el) => el != "")) {
                     res.send(results);
                 }
 
@@ -124,7 +142,6 @@ function call_HTML_scraper(url, results, res, ind, sub_ind, server_port) {
 
 app.post('/results', (req, res) => {
     let data = req.body;
-    //console.log(data);
     
     var urls = [encodeURI(`https://en.wikipedia.org/wiki/${data.searchbox_1_title}`),
                   encodeURI(`https://en.wikipedia.org/wiki/${data.searchbox_2_title}`)];
