@@ -1,0 +1,30 @@
+{
+  "name": "code",
+  "version": "0.1.1",
+  "description": "Creature Compare App =======",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remckee/creature-compare-app.git"
+  },
+  "author": "Rebecca Mckeever",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/remckee/creature-compare-app/issues"
+  },
+  "homepage": "https://github.com/remckee/creature-compare-app#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-handlebars": "^6.0.1",
+    "https": "^1.0.0",
+    "path": "^0.12.7",
+    "puppeteer": "^11.0.0",
+    "websocket": "^1.0.34",
+    "ws": "^8.2.3"
+  }
+}
