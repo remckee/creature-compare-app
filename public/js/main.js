@@ -6,7 +6,7 @@
 "use strict";
 
 // check mode and update the text of the input labels accordingly
-function changeInputLabels() {
+function updateInputLabels() {
     if ($('#mode_selection').val() == "2-creature") {
         $('#searchbox_1_label').text("creature 1:");
         $('#searchbox_2_label').text("creature 2:");
@@ -17,34 +17,27 @@ function changeInputLabels() {
 }
 
 
-// uses Wikipedia API to find the title of the Wikipedia page 
-// that the value in param.srsearch redirects to
-async function getPageTitle(base_url, params, id, title) {
-    let url = base_url;
-    var page_title = title;
+// Store a title cased version of the user input 
+/// in the hidden form field with the given id
+async function storeTitleCase(id, title) {
+    var page_title = title.toLowerCase();
     var first_let = page_title.charAt(0).toUpperCase();
     page_title = page_title.replace(page_title.charAt(0), first_let);
-    console.log("cap: ", page_title);
-    //initRequest(encodeURI(`http://localhost:8080/results/${page_title}`));
-    // Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
-
-    // var response = await fetch(url)
-    //     .then((response) => {return response.json()})
-    //     .then((response) => {
-    //         if (response.query.search[0].title){
-    //             page_title = response.query.search[0].title;
-    //             console.log("title: "+page_title);
-                  var selector = "#" + id;
-                  $(`#${id}`).val(page_title);
-               //initRequest(encodeURI(`http://localhost:8080/results/${page_title}`));
-        //     }
-        // })
-        // .catch((error) => console.log(error));    
+    var selector = "#" + id;
+    $(`#${id}`).val(page_title); 
 };
+
+function processForm(event) {
+    var search_box_1 = $('#searchbox_1').val();
+    var search_box_2 = $('#searchbox_2').val();
+    storeTitleCase("searchbox_1_title", search_box_1);
+    storeTitleCase("searchbox_2_title", search_box_2);
+}
+
 
 
 $(document).ready(function(){
-    changeInputLabels();
+    updateInputLabels();
 
     // create modal object
     var infoModal = new bootstrap.Modal(document.getElementById('info-modal'), {
@@ -59,35 +52,10 @@ $(document).ready(function(){
     
     // update input labels when mode changes
     $("#mode_selection").change(function(){
-        changeInputLabels();
+        updateInputLabels();
 
     });
 
-    $("#user-input-form").submit(function(event){
-        //event.preventDefault();
-                
-        // get form values
-        var search_box_1 = $('#searchbox_1').val();
-        var search_box_2 = $('#searchbox_2').val();
-        console.log(search_box_1);
-        console.log(search_box_2);
-
-        let api_url = "https://en.wikipedia.org/w/api.php?origin=*"; 
-        let page_url = "https://en.wikipedia.org/wiki/";
-
-        var url_params = {
-            action: "query",
-            list: "search",
-            srsearch: search_box_1,
-            format: "json"
-        };
-
-        getPageTitle(api_url, url_params, "searchbox_1_title", search_box_1);
-        
-        url_params.srsearch = search_box_2;
-        getPageTitle(api_url, url_params, "searchbox_2_title", search_box_2);
-
-    });
-
+    $("#user-input-form").submit(processForm);
 });
 
