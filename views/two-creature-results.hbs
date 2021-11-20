@@ -15,7 +15,9 @@
                 <section id="image-results" class="row justify-content-evenly">
                     <div class="col-8 col-sm-6 col-lg-4 mb-4">
                         <div class="card">
-                            <img src="{{creature_1_img}}" class="card-img-top" alt="{{creature_1}}">
+                            {{#each creature_1_img}}
+                                {{> page/card_img}}
+                            {{/each}}
                             <div class="card-body">
                                 <h3 class="card-title">{{creature_1}}</h3>
                             </div>
@@ -23,7 +25,9 @@
                     </div>
                     <div class="col-8 col-sm-6 col-lg-4 mb-4">
                         <div class="card">
-                            <img src="{{creature_2_img}}" class="card-img-top" alt="{{creature_2}}">
+                            {{#each creature_2_img}}
+                                {{> page/card_img}}
+                            {{/each}}
                             <div class="card-body">
                                 <h3 class="card-title">{{creature_2}}</h3>
                             </div>
