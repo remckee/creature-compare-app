@@ -5,57 +5,43 @@
 
 "use strict";
 
-// check mode and update the text of the input labels accordingly
-function updateInputLabels() {
-    if ($('#mode_selection').val() == "2-creature") {
-        $('#searchbox_1_label').text("creature 1:");
-        $('#searchbox_2_label').text("creature 2:");
+function updateTheme() {
+    $('body').toggleClass("text-white bg-dark");
+    $('.modal-content').toggleClass("text-white bg-gray-dark border-dark");
+    $('input[type="search"]').toggleClass("text-white bg-gray-darkest border-dark");
+    $('input[type="submit"]').toggleClass("btn-dark border-light");
+    $('.switch').toggleClass("bg-dark border-light");
+    $('.back-button').toggleClass("btn-dark border-light");
+    $('.modal-btn').toggleClass("btn-dark border-light");
+    $('.btn-close').toggleClass("btn-dark border-light");
+    $('a').toggleClass("link-light");
+    $('.external-link').toggleClass("link-light");
+    $('.card').toggleClass("text-white bg-gray-dark");
+    $('svg').toggleClass("svg-dark");
+    $('#info-btn').toggleClass("btn-dark");
+    $('code').toggleClass("text-warning");
+    
+
+    var classes = $('body').attr("class");
+    if (classes.includes('bg-dark')) {
+        $('#theme_switch_label').text("Dark theme");
+        $('.img-card-body').addClass("bg-gray-darker");
+        $('.img-card-body').removeClass("bg-light");
     } else {
-        $('#searchbox_1_label').text("creature:");
-        $('#searchbox_2_label').text("feature:");
+        $('#theme_switch_label').text("Light theme");
+        $('.img-card-body').addClass("bg-light");
+        $('.img-card-body').removeClass("bg-gray-darker");
     }
 }
 
-
-// Store a title cased version of the user input 
-/// in the hidden form field with the given id
-async function storeTitleCase(id, title) {
-    var page_title = title.toLowerCase();
-    var first_let = page_title.charAt(0).toUpperCase();
-    page_title = page_title.replace(page_title.charAt(0), first_let);
-    var selector = "#" + id;
-    $(`#${id}`).val(page_title); 
-};
-
-function processForm(event) {
-    var search_box_1 = $('#searchbox_1').val();
-    var search_box_2 = $('#searchbox_2').val();
-    storeTitleCase("searchbox_1_title", search_box_1);
-    storeTitleCase("searchbox_2_title", search_box_2);
-}
-
+$("#theme_switch").change(function(){
+    updateTheme();
+});
 
 
 $(document).ready(function(){
-    updateInputLabels();
-
-    // create modal object
-    var infoModal = new bootstrap.Modal(document.getElementById('info-modal'), {
-        backdrop: false,
-        keyboard: true
-    });  
-
-    // click handler for info button to show info modal
-    $("#info-btn").click(function () {
-        infoModal.show();
-    });
-    
-    // update input labels when mode changes
-    $("#mode_selection").change(function(){
-        updateInputLabels();
-
-    });
-
-    $("#user-input-form").submit(processForm);
+    //updateTheme();
+    //$('.switch:checked').addClass("bg-secondary");
+    console.log($("#theme_switch").checked);
 });
 

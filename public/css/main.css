@@ -3,7 +3,11 @@
  * CS 361
 ***********************************************************/
 :root {
-
+    --gray-dark: #303030;
+    --gray-darker: #2e2e2e;
+    --gray-darkest: #121212;
+    --gray-light: #dddddd;
+    --gray-lighter: #f7f7f7;
 }
 
 .mark, mark {
@@ -26,4 +30,35 @@ a:hover, a:focus, a:active, a:visited {
     margin-left: 0.25rem;
     width: 0.75rem;
 }
+
+.bg-gray-dark {
+    background: var(--gray-dark);
+}
+
+.bg-gray-darker {
+    background: var(--gray-darker);
+}
+
+.bg-gray-darkest {
+    background: var(--gray-darkest);
+}
+
+.bg-gray-light {
+    background: var(--gray-light);
+}
+
+.bg-gray-lighter {
+    background: var(--gray-lighter);
+}
+
+.info-svg-light {
+    fill: green;
+}
+
+.svg-dark {
+    fill: white;
+    color: white;
+}
+
+$primary:       $white;
 
