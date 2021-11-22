@@ -2,7 +2,7 @@ Creature Compare App
 =======
 
 Using
-=======
+-----------
 
 Type in the name of a different living organism in each box to learn the most specific taxonomy category that includes both. You can also double click inside either of the text boxes for a list of suggestions. As you type, possible matches will drop down below the textbox. Note that you are not limited to the suggested organisms.
 
@@ -17,7 +17,7 @@ Note that, despite the use of the term "creature", the organism can be any [Anim
 | ![screenshot of bottom of results page with Light theme](screenshots/results-light-bottom.png )  | ![screenshot of bottom of results page with Dark theme](screenshots/results-dark-bottom.png )  |
 
 Installing and running with localhost
-=======
+-----------
 
 To install, clone/download the files and navigate to the folder where you saved the files, and run
 
@@ -30,7 +30,7 @@ to install the required modules. To start the app, run
 and then navigate to `http://localhost:3800/` in your browser.
 
 Starting the services
-=======
+-----------
 
 Clone/download the [HTML-Scraper](https://github.com/lsendlein/HTML-Scraper) and the [ImageScraper](https://github.com/SaphiraSkies/ImageScraper). Install the dependencies needed as described on their README pages. 
 
