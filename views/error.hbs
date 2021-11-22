@@ -1,24 +1,20 @@
 <main class="pt-4">
     <div class="container">
+        {{> page/switch}}
         <article class="mb-4 clearfix card">
             <h1 class="card-header">Search results</h1>
             <div class="card-body">
                 <section id="text-results" class="row">
                     <h2 class="card-title">Error</h2>
-                    <p class="card-text">
-                        Sorry, your query for <b>{{searchbox_1}}</b> and <b>{{searchbox_2}}</b> in {{mode_selection}} 
-                        mode returned 0 results.
-                    </p>
-                    <p class="card-text">
-                        Please check whether you entered everything correctly.
-                    </p>
-                    <p class="card-text">
-                        {{details}}
-                    </p>
+                    {{#each error_p}}
+                        <p class="card-text">
+                            {{details}}
+                        </p>
+                    {{/each}}
                 </section>
             </div>
         </article>
-        <button id="prev-page-btn" type="button" class="btn btn-primary" >Return to previous page</button>
+        <button id="prev-page-btn" type="button" class="btn back-button btn-primary" >Return to previous page</button>
     </div>
 </main>
 {{> page/footer}}

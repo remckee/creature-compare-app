@@ -1,3 +1,4 @@
 #ignore things we don't want to track
 *node_modules
 *.git
+*.log

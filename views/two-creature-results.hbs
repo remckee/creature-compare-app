@@ -1,5 +1,6 @@
 <main class="pt-4">
     <div class="container">
+        {{> page/switch}}
         <article class="mb-4 clearfix card">
             <h1 class="card-header">Classification of {{creature_1}} and {{creature_2}}</h1>
             <div class="card-body">
@@ -8,8 +9,8 @@
                         {{category}}: {{taxon_name}}
             </h2>
             <p class="card-text p-3">
-                <b>{{creature_1}}</b> and <b>{{creature_2_lower}}</b> are both members of the {{category_lower}} <i><a href="https://en.wikipedia.org/wiki/{{taxon_name}}" target="__blank" class="external-link">{{taxon_name}}<img class="external-icon" alt="(opens in new tab)" 
-                                    src="images/box-arrow-up-right.svg"></a></i>.		                
+                <b>{{creature_1}}</b> and <b>{{creature_2_lower}}</b> are both members of the {{category_lower}} <i>
+                {{#with taxon_link}}{{> page/external_link}}{{/with}}</i>.		                
             </p>
                 </section>
                 <section id="image-results" class="row justify-content-evenly">
@@ -18,7 +19,7 @@
                             {{#each creature_1_img}}
                                 {{> page/card_img}}
                             {{/each}}
-                            <div class="card-body">
+                            <div class="card-body img-card-body">
                                 <h3 class="card-title">{{creature_1}}</h3>
                             </div>
                         </div>
@@ -28,7 +29,7 @@
                             {{#each creature_2_img}}
                                 {{> page/card_img}}
                             {{/each}}
-                            <div class="card-body">
+                            <div class="card-body img-card-body">
                                 <h3 class="card-title">{{creature_2}}</h3>
                             </div>
                         </div>
@@ -36,18 +37,14 @@
                 </section>
             </div>
             <footer class="card-footer">
-                <p>Source: Adapted from <a href="https://en.wikipedia.org/wiki/{{creature_1}}" target="__blank" class="external-link">https://en.wikipedia.org/wiki/{{creature_1}}<img class="external-icon" alt="(opens in new tab)" 
-                                    src="images/box-arrow-up-right.svg"></a> and <a href="https://en.wikipedia.org/wiki/{{creature_2}}" target="__blank" class="external-link">https://en.wikipedia.org/wiki/{{creature_2}}<img class="external-icon" alt="(opens in new tab)" 
-                                    src="images/box-arrow-up-right.svg"></a></p>
-                <p>Text is available under the <a rel="license" href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License" target="__blank" class="external-link">Creative Commons Attribution-ShareAlike License<img class="external-icon" alt="(opens in new tab)" 
-                                    src="images/box-arrow-up-right.svg"></a>
+                <p>Source: Adapted from {{#with creature_1_link}}{{> page/external_link}}{{/with}} and {{#with creature_2_link}}{{> page/external_link}}{{/with}}</p>
+                <p>Text is available under the {{#with commons_link}}{{> page/external_link}}{{/with}}
                     <a rel="license" href="//creativecommons.org/licenses/by-sa/3.0" style="display:none;"></a>;
-    additional terms may apply. Wikipedia® is a registered trademark of the <a href="https://www.wikimediafoundation.org" target="__blank" class="external-link">Wikimedia Foundation, Inc.<img class="external-icon" alt="(opens in new tab)" 
-                                    src="images/box-arrow-up-right.svg"></a>, a non-profit organization.
+    additional terms may apply. Wikipedia® is a registered trademark of the {{#with wikimedia_link}}{{> page/external_link}}{{/with}}, a non-profit organization.
                 </p>
             </footer>
         </article>
-        <button id="prev-page-btn" type="button" class="btn btn-primary" >Return to previous page</button>
+        <button id="prev-page-btn" type="button" class="btn back-button btn-primary" >Return to previous page</button>
     </div>
 </main>
 {{> page/footer}}

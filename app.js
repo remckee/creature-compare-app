@@ -12,6 +12,8 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const moment = require('moment');
 
 exphbs.create({partialsDir: 'views/partials/'})
 app.engine('.hbs', exphbs.engine({extname: '.hbs'}));
@@ -35,6 +37,9 @@ domains.set('Bacteria', 'Bacteria');
 domains.set('Archaea', 'Archaea');
 domains.set('Protista', 'Eukaryota');
 
+// to avoid rendering the results page more than once
+var results_rendered = false;
+
 
 // check if none of the taxon attributes are equal to value
 function check_results(results, value) {
@@ -47,7 +52,7 @@ function results_ready(results) {
 }
 
 function results_valid(results) {
-    return check_results(results, false);
+    return check_results(results, false) && (results.HTML.available !== false);
 }
 
 
@@ -63,16 +68,9 @@ function get_img_data(creature) {
 }
 
 
-function results_params() {
-    return {
-        title: "- Results",
-        script: "results.js"
-    };
-}
-
-
-function two_creature_results_params(results) {
+function results_params(results) {
     var obj = {
+        title            : "- Results",
         creature_1       : results.creatures[0].name,
         creature_2       : results.creatures[1].name,
         creature_2_lower : results.creatures[1].name.toLowerCase(),
@@ -80,17 +78,42 @@ function two_creature_results_params(results) {
         category_lower   : results.common_category.category.toLowerCase(),
         taxon_name       : results.common_category.taxon_name,
         creature_1_img   : get_img_data(results.creatures[0]),
-        creature_2_img   : get_img_data(results.creatures[1])
+        creature_2_img   : get_img_data(results.creatures[1]),
+        script           : [{script_file: "main.js"}, {script_file: "results.js"}],
+        taxon_link       : {
+                              href: `https://en.wikipedia.org/wiki/${results.common_category.taxon_name}`,
+                              text: results.common_category.taxon_name,
+                              post_text: ""
+                           },
+        creature_1_link  : {
+                              href: `https://en.wikipedia.org/wiki/${results.creatures[0].name}`,
+                              text: `https://en.wikipedia.org/wiki/${results.creatures[0].name}`,
+                              post_text: ""
+                           },
+        creature_2_link  : {
+                              href: `https://en.wikipedia.org/wiki/${results.creatures[1].name}`,
+                              text: `https://en.wikipedia.org/wiki/${results.creatures[1].name}`,
+                              post_text: ""
+                           },
+        commons_link     : {
+                              href: 'https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License',
+                              text: 'Creative Commons Attribution-ShareAlike License',
+                              post_text: ""
+                           },
+        wikimedia_link   : {
+                              href: 'https://www.wikimediafoundation.org',
+                              text: 'Wikimedia Foundation, Inc.',
+                              post_text: ""
+                           },
     };
-    return Object.assign(obj, results_params());
+    return obj;
 }
 
 
 function render_results(res, results) {
-    if (results.mode_selection=="2-creature") {
-        res.render('two-creature-results', two_creature_results_params(results));
-    } else if (results.mode_selection=="1-creature") {
-        res.render('one-creature-results', results_params());
+    if (!results_rendered) {
+        results_rendered = true;
+        res.render('two-creature-results', results_params(results));
     }
 }
 
@@ -116,16 +139,19 @@ function get_error_msg(invalid_box) {
 }
 
 
-function render_error(res, results) {
-    var values = {
-        title: "- Error",
-        script: "results.js",
-        searchbox_1: results.creatures[0].name,
-        searchbox_2: results.creatures[1].name,
-        mode_selection: results.mode_selection,
-        details: get_error_msg(get_invalid_input(results.creatures))
-    };
-    res.render('error', values);
+function render_error(res, results, error_ps, error_msg) {
+    log_err_msg(error_msg);
+    if (!results_rendered) {
+        results_rendered = true;
+        var values = {
+            title: "- Error",
+            error_p: error_ps,
+            script: [{script_file: "main.js"},
+                      {script_file: "results.js"}]
+        };
+
+        res.render('error', values);
+    }
 }
 
 
@@ -157,7 +183,7 @@ function add_url_prefix(url) {
 }
 
 
-var process_img = function process_img_result(results, res, ind, data, compare=false) {
+const process_img = (results, res, ind, data) => {
     var out_url = select_img_url(data);
 
     results.creatures[ind].img = add_url_prefix(out_url);
@@ -167,10 +193,34 @@ var process_img = function process_img_result(results, res, ind, data, compare=f
 }
 
 
-var process_HTML = function process_HTML_result(results, res, ind, data) {
-    var taxon = JSON.parse(data.utf8Data).response;
+const categories_match = (len_1, len_2, category_1, category_2) => {
+    return len_1 > 1 && len_2 > 1 && (category_1 === category_2);
+}
+
+
+const lowercase_compare = (value, compare) => {
+    return value.toLowerCase() === compare;
+}
+
+
+// assumes that both taxonomies either start with a kingdom
+// or with a domain with the same name as the kingdom it contains (i.e., Bacteria, Archaea)
+const get_upper_category = (category_1, category_2) => {
+    var domain = domains.get(category_1[1]);
     
-    if (results.creatures[ind].name == 'Mouse') {
+    var category = [];
+    if (domain === domains.get(category_2[1])) {
+        category = ['Domain', domain];
+    } else {
+        category = ['root', 'Life'];
+    }
+    return category;
+}
+
+
+const get_taxon = (data, name) => {
+    var taxon = JSON.parse(data.utf8Data).response;
+    if (name == 'Mouse') {
         var taxon = [
                   "Scientific classification",
                   "Domain:\tEukaryota",
@@ -180,101 +230,131 @@ var process_HTML = function process_HTML_result(results, res, ind, data) {
                   "Order:\tRodentia"
         ];
     }
+    return taxon;
+}
 
-    if (results_valid(results) && Array.isArray(taxon) && taxon[0] === 'Scientific classification') {
-        for (var i = 0; i < taxon.length; i+=1) {
-            taxon[i] = taxon[i].split(/:?\t/, 2);
-        }
+
+const split_arr_els = (arr, regex) => {
+    for (var i = 0; i < arr.length; i+=1) {
+        arr[i] = arr[i].split(regex, 2);
+    }
+} 
+
+
+const get_category = (arrs, results) => {
+    var category = [];
+    var found_one = false;        // whether at least one match found
+    var keep_going = true;
+    var arr_lens = [arrs[0].length, arrs[1].length];
     
-        results.creatures[ind].taxon = taxon;
-        var arrs = [results.creatures[0].taxon, results.creatures[1].taxon];
-        console.log(arrs);
-        if (arrs[0] !== null && arrs[1] !== null ) {
-            var category = [];
-            var found_one = false;        // whether at least one match found
-            var keep_going = true;
-            var arr_lens = [arrs[0].length, arrs[1].length];
-            var parts = [[], []];
-
-            for (var i = 1; i < arr_lens[0] && keep_going; i+=1) {
-                var found = false;          // whether a match for arrs[0][i] was found
-                for (var j = 1; j < arr_lens[1] && keep_going && !found; j+=1) {
-                    parts[0][i] = arrs[0][i].split(/:?\t/, 2);
+    for (var i = 1; i < arr_lens[0] && keep_going; i+=1) {
+        var found = false;          // whether a match for arrs[0][i] was found
+        for (var j = 1; j < arr_lens[1] && keep_going && !found; j+=1) {
+            if (categories_match(arrs[0][i].length, arrs[1][j].length, 
+                  arrs[0][i][0], arrs[1][j][0])) {
+                if (arrs[0][i][1] === arrs[1][j][1]) {
+                    category = arrs[0][i];
+                    found = true;
+                    found_one = true;
                     
-                    if (!parts[1][j]) {
-                        parts[1][j] = arrs[1][j].split(/:\t/, 2);
-                    }
-                    
-                    if (parts[0][i].length > 1 
-                      && parts[1][j].length > 1 
-                      && parts[0][i][0] == parts[1][j][0]) {
-                        if (parts[0][i][1] == parts[1][j][1]) {
-                            category = parts[0][i];
-                            found = true;
-                            found_one = true;
-                            
-                        // Terminate for loops using a boolean if kingdoms are not the same
-                        } else if (parts[0][i][0].toLowerCase() == 'kingdom') {
-                            console.log("diff kingdoms");
-                            keep_going = false;
-                        }
-                    }
+                // Terminate for loops using a boolean if kingdoms are not the same
+                } else if (lowercase_compare(arrs[0][i][0], 'kingdom')) {
+                    keep_going = false;
                 }
             }
-            
-            // If they are not in the same kingdom, check domain
-            if (found_one === false) {
-                var highest = [results.creatures[0].taxon[1].split(/:\t/, 2),
-                              results.creatures[1].taxon[1].split(/:\t/, 2)];
-            
-                var domain = domains.get(results.creatures[0].taxon[1].split(/:\t/, 2)[1]);
-                console.log("domain: "+domain);
-                if (domain === domains.get(results.creatures[1].taxon[1].split(/:\t/, 2)[1])) {
-                    category[0] = 'Domain';
-                    category[1] = domain;
-                } else {
-                    category[0] = 'root';
-                    category[1] = 'Life';
-                }
-            }
-            results.common_category.category = category[0];
-            results.common_category.taxon_name = category[1];
         }
+    }
+    
+    // If there was no match, check domain
+    if (found_one === false) {
+        category = get_upper_category(results.creatures[0].taxon[1], 
+                                      results.creatures[1].taxon[1]);
+    }
+    
+    return {category: category[0], taxon_name: category[1]};
+}
 
-        if (results_valid(results) && results_ready(results)) {
-            render_results(res, results);
-        }
-        
+
+const process_HTML = (results, res, ind, data) => {
+    if (results.HTML.available === false) {
+        render_error(res, results, [{details: 'Unable to connect to HTML scraper service.'}], "Connect Error");
     } else {
-        results.creatures[ind].taxon = false;
-        results.common_category.category = false;
-        results.common_category.taxon_name = false;
-        render_error(res, results);
+        var taxon = get_taxon(data, results.creatures[ind].name);
+
+        if (results_valid(results) && Array.isArray(taxon) && taxon[0] === 'Scientific classification') {
+            split_arr_els(taxon, /:?\t/);
+
+            results.creatures[ind].taxon = taxon;
+            var arrs = [results.creatures[0].taxon, results.creatures[1].taxon];
+            if (arrs[0] !== null && arrs[1] !== null ) {
+                results.common_category = get_category(arrs, results);
+            }
+
+            if (results_valid(results) && results_ready(results)) {
+                render_results(res, results);
+            }
+            
+        } else {
+            results.creatures[ind].taxon = false;
+            results.common_category = {category: false, taxon_name: false};
+            render_error(res, results, 
+                [
+                    {details: `Sorry, your query for "${results.creatures[0].name}" and "${results.creatures[1].name}" returned 0 results.`},
+                    {details: "Please check whether you entered everything correctly."},
+                    {details: get_error_msg(get_invalid_input(results.creatures))}
+                ],
+                `${results.creatures[0].name}, ${results.creatures[1].name}`);
+        }
     }
 }
 
 
-function call_service(results, res, req, ind, server_port, funct, protocol) {
-    if (results_valid(results)) {
+function log_err_msg(msg) {
+    var error_log_text = `${moment()}: ${msg}\n`;
+    fs.appendFile('errors.log', error_log_text, (err) => {
+        if (err) throw err;
+            console.log('The message was appended to error log file!');
+        });
+}
+
+
+function process_connect_error(results, funct, res, ind, error_msg, service) {
+    error_msg = 'Connect Error: ' + error_msg;
+    console.log(error_msg);
+    results[`${service}`].available = false;
+    
+    if (service=='Img') {
+        results.creatures[ind].img = "";
+    } else {
+        funct(results, res, ind, {});
+    }
+}
+
+
+function call_service(results, res, req, ind, server_port, funct, service, protocol) {
+    if ((results[`${service}`].available !== false)) {
         var client = new WebSocketClient();
 
         // if connection fails, log an error
         client.on('connectFailed', function(error) {
-            console.log('Connect Error: ' + error.toString());
+            process_connect_error(results, funct, res, ind, error.toString(), service);
+            return;
         });
 
         client.on('connect', function(connection) {
             // can remove below line, I just thought it was helpful to know it was working
             console.log('WebSocket Client Connected');
             connection.on('error', function(error) {
-                console.log("Connection Error: " + error.toString());
+                process_connect_error(results, funct, res, ind, error.toString(), service);
+                return;
             });
 
             // when a message from the server is recieved
-            connection.on('message', function message(data) {
+            connection.on('message', function (data) {
                 console.log('Received reply: \n%s', data);
                 funct(results, res, ind, data);
                 connection.close();
+                return data;
             });
             
             // function to send data to server
@@ -300,14 +380,46 @@ function call_service(results, res, req, ind, server_port, funct, protocol) {
 app.get('/', (req, res, next) => {
     res.render('index', {
         title: "",
-        script: "main.js"
+        script: [{script_file: "main.js"},
+                  {script_file: "home.js"}],
+        link: [
+            {
+                href: "https://species.wikimedia.org/wiki/Animalia",
+                text: "Animalia",
+                post_text: ", "
+            },
+            {
+                href: "https://species.wikimedia.org/wiki/Plantae",
+                text: "Plantae",
+                post_text: ", "
+            },
+            {
+                href: "https://species.wikimedia.org/wiki/Fungi",
+                text: "Fungi",
+                post_text: ", "
+            },
+            {
+                href: "https://species.wikimedia.org/wiki/Bacteria",
+                text: "Bacteria",
+                post_text: ", "
+            },
+            {
+                href: "https://species.wikimedia.org/wiki/Archaea",
+                text: "Archaea",
+                post_text: ", or "
+            },
+            {
+                href: "https://species.wikimedia.org/wiki/Protista",
+                text: "Protista",
+                post_text: "."
+            }
+        ]
     });
 });
 
 
 app.post('/results', (req, res) => {
     let data = req.body;
-    console.log(data.theme_switch);
     var results = {
         "creatures": 
         [{
@@ -327,21 +439,28 @@ app.post('/results', (req, res) => {
             category: null,
             taxon_name: null
         },
-        "mode_selection": data.mode_selection
+        "HTML": 
+        {
+            available: null
+        },
+        "Img": 
+        {
+            available: null
+        }
     };
     
-    
+    //render_page(results, res, req);
     for (var i = 0; i < 2 && results_valid(results); i+=1) {
         // call HTML scraper
         if (results_valid(results)) {
             var req = {"url" : results.creatures[i].url};
-            call_service(results, res, req, i, 8080, process_HTML, 'echo-protocol');
+            call_service(results, res, req, i, 8080, process_HTML, "HTML", 'echo-protocol');
         }
 
         // call Image scraper
         if (results_valid(results)) {
             var req = {"URL" : results.creatures[i].url};
-            call_service(results, res, req, i, 5051, process_img, '');
+            call_service(results, res, req, i, 5051, process_img, "Img", '');
         }
     }
 
