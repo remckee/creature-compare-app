@@ -1,73 +1,51 @@
 <main class="pt-4">
     <!-- modal -->
     <div id="info-modal" tabindex="-1" class="modal modal-dialog-scrollable fade" style="display:none;" aria-labelledby="info-modal-label" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="info-modal-label">Mode info</h5>
+                    <h5 class="modal-title" id="info-modal-label">Info</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>In <code>2 creature mode</code>, you can type in the name of a different living organism in each box to learn the most specific taxonomy category that includes both.</p>
-                    <p>In <code>1 creature 1 feature mode</code>, you can type in the name of an organism in the first box and any term or phrase in the second box to learn any facts about the organism that mention the feature in the second box.
+                    <p>Use the theme switch to toggle the colors of the page between <code>Dark theme</code> and <code>Light theme</code>. The label next to the switch displays the currently active theme.</p>
+                    <p>Type in the name of a different living organism in each box to learn the most specific taxonomy category that includes both. You can also double click inside either of the text boxes for a list of suggestions. As you type, possible matches will drop down below the textbox. Note that you are not limited to the suggested organisms.</p>
                     <p>Note that, despite the use of the term "creature", the organism can be any 
-                    <a href="https://species.wikimedia.org/wiki/Animalia" 
-                        target="__blank" class="external-link">
-                        Animalia<img class="external-icon" alt="(opens in new tab)" 
-                            src="images/box-arrow-up-right.svg"></a>, 
-                    <a href="https://species.wikimedia.org/wiki/Plantae" 
-                        target="__blank" class="external-link">
-                        Plantae<img class="external-icon" alt="(opens in new tab)" 
-                            src="images/box-arrow-up-right.svg"></a>, 
-                    <a href="https://species.wikimedia.org/wiki/Fungi" 
-                        target="__blank" class="external-link">
-                        Fungi<img class="external-icon" alt="(opens in new tab)" 
-                            src="images/box-arrow-up-right.svg"></a>, 
-                    <a href="https://species.wikimedia.org/wiki/Bacteria" 
-                        target="__blank" class="external-link">
-                        Bacteria<img class="external-icon" alt="(opens in new tab)" 
-                            src="images/box-arrow-up-right.svg"></a>, 
-                    <a href="https://species.wikimedia.org/wiki/Archaea" 
-                        target="__blank" class="external-link">
-                        Archaea<img class="external-icon" alt="(opens in new tab)" 
-                            src="images/box-arrow-up-right.svg"></a>, or 
-                    <a href="https://species.wikimedia.org/wiki/Protista" 
-                        target="__blank" class="external-link">
-                        Protista<img class="external-icon" alt="(opens in new tab)" 
-                            src="images/box-arrow-up-right.svg"></a>.
+                    {{#each link}}
+                        {{> page/external_link}}
+                    {{/each}}</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
+                    <button type="button" class="btn modal-btn btn-primary" data-bs-dismiss="modal">Okay</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="container">
-    <form id="user-input-form" name="user-input-form" class="needs-validation" action="/results" method="post"  novalidate="novalidate"><!--aria-describedby="form-instructions"-->
+    <button type="button" id="info-btn" class="btn col-auto mb-1" aria-label="info button">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img" id="info-btn-svg" aria-label="i icon" width="32" height="32" class="bi bi-info-circle info-svg-light" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+        </svg>
+    </button>
+    
+    <form id="user-input-form" name="user-input-form" class="needs-validation" action="/results" method="post"  novalidate="novalidate">
         <div class="row mb-4">
-            <label for="mode-selection" class="form-label col-auto m-0 pb-1">Mode:</label>
-            <button type="button" id="info-btn" class="btn col-auto mb-1" aria-label="info button">
-                <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="i icon" width="32" height="32" fill="green" class="bi bi-info-circle" viewBox="0 0 16 16">
-                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                  <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                </svg>
-            </button>
-            <select id="mode_selection" name="mode_selection" class="form-select" aria-label="mode selection drop down">
-                <option selected value="2-creature">2 creature mode</option>
-                <option value="1-creature">1 creature 1 feature mode</option>
-            </select>
-        </div>
+            {{> page/switch}}
+        </div>  
         <div class="row mb-4">
             <label for="searchbox_1" id="searchbox_1_label" class="form-label col-auto m-0 pb-1">creature 1:</label>
-            <input id="searchbox_1" name="searchbox_1" type="search" spellcheck="true">
+            <input id="searchbox_1" class="searchbox" name="searchbox_1" type="search" spellcheck="true" list="suggestions">
             <input id="searchbox_1_title" name="searchbox_1_title" value="" type="hidden">
         </div>   
         <div class="row mb-4">
             <label for="searchbox_2" id="searchbox_2_label" class="form-label col-auto m-0 pb-1">creature 2:</label>
-            <input id="searchbox_2" name="searchbox_2" type="search" spellcheck="true">
+            <input id="searchbox_2" class="searchbox" name="searchbox_2" type="search" spellcheck="true" list="suggestions">
             <input id="searchbox_2_title" name="searchbox_2_title" value="" type="hidden">
-        </div>   
+        </div> 
+        <datalist id="suggestions" class="">
+        </datalist>
         <div class="row mb-4">
             <input type="submit" value="Submit"
                 id="user-input-submit" name="user-input-submit" 

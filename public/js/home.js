@@ -33,7 +33,8 @@ function setDatalists() {
     var val_1 = search_box_1.val().toLowerCase();
     var val_2 = search_box_2.val().toLowerCase();
     
-    var org_list = ["Wombat", "Rabbit", "Hawaiian honeycreeper", "Raccoon"];
+    var org_list = ["Wombat", "Rabbit", "Hawaiian honeycreeper", "Raccoon", "Quaking aspen", "Lungwort lichen", "Cyanobacteria", "E coli", "Vine maple", "Capybara"];
+    org_list.sort();
     var org_list_len = org_list.length;
     var datalist = $('#suggestions');
     datalist.empty();
