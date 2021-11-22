@@ -376,45 +376,30 @@ function call_service(results, res, req, ind, server_port, funct, service, proto
 }
 
 
+function modal_link(url_base, value, post_text) {
+    return {href: `${url_base}${value}`, text: value, post_text: post_text};
+}
+
+
 // render home page
 app.get('/', (req, res, next) => {
-    res.render('index', {
+    var values = {
         title: "",
         script: [{script_file: "main.js"},
                   {script_file: "home.js"}],
-        link: [
-            {
-                href: "https://species.wikimedia.org/wiki/Animalia",
-                text: "Animalia",
-                post_text: ", "
-            },
-            {
-                href: "https://species.wikimedia.org/wiki/Plantae",
-                text: "Plantae",
-                post_text: ", "
-            },
-            {
-                href: "https://species.wikimedia.org/wiki/Fungi",
-                text: "Fungi",
-                post_text: ", "
-            },
-            {
-                href: "https://species.wikimedia.org/wiki/Bacteria",
-                text: "Bacteria",
-                post_text: ", "
-            },
-            {
-                href: "https://species.wikimedia.org/wiki/Archaea",
-                text: "Archaea",
-                post_text: ", or "
-            },
-            {
-                href: "https://species.wikimedia.org/wiki/Protista",
-                text: "Protista",
-                post_text: "."
-            }
-        ]
-    });
+    };
+
+    var links = [];
+    var mapiter = domains.keys();
+    var post = [", ", ", ", ", ", ", ", ", or ", "."];
+    var i = 0;
+    for (const val of mapiter) {
+        links.push(modal_link("https://species.wikimedia.org/wiki/", val, post[i]));
+        i+=1;
+    }
+    
+    values.link = links;
+    res.render('index', values);
 });
 
 
@@ -449,7 +434,6 @@ app.post('/results', (req, res) => {
         }
     };
     
-    //render_page(results, res, req);
     for (var i = 0; i < 2 && results_valid(results); i+=1) {
         // call HTML scraper
         if (results_valid(results)) {
