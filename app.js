@@ -37,10 +37,6 @@ domains.set('Bacteria', 'Bacteria');
 domains.set('Archaea', 'Archaea');
 domains.set('Protista', 'Eukaryota');
 
-// to avoid rendering the results page more than once
-var results_rendered = false;
-
-
 // check if none of the taxon attributes are equal to value
 function check_results(results, value) {
     return (results.creatures[0].taxon !== value && results.creatures[1].taxon !== value
@@ -111,8 +107,8 @@ function results_params(results) {
 
 
 function render_results(res, results) {
-    if (!results_rendered) {
-        results_rendered = true;
+    if (!results.results_rendered) {
+        results.results_rendered = true;
         res.render('two-creature-results', results_params(results));
     }
 }
@@ -141,8 +137,8 @@ function get_error_msg(invalid_box) {
 
 function render_error(res, results, error_ps, error_msg) {
     log_err_msg(error_msg);
-    if (!results_rendered) {
-        results_rendered = true;
+    if (!results.results_rendered) {
+        results.results_rendered = true;
         var values = {
             title: "- Error",
             error_p: error_ps,
@@ -431,7 +427,8 @@ app.post('/results', (req, res) => {
         "Img": 
         {
             available: null
-        }
+        },
+        "results_rendered": false
     };
     
     for (var i = 0; i < 2 && results_valid(results); i+=1) {
