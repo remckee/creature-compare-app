@@ -10,32 +10,30 @@ function updateTheme() {
     var switcher = document.getElementById("theme_switch");
     storeState(switcher);
 
+    var theme_classes = {
+        'body':                 "text-white bg-dark",
+        '.modal-content':       "text-white bg-gray-dark border-dark",
+        'input[type="search"]': "text-white bg-gray-darkest border-dark",
+        '.switch':              "border-light bg-dark btn-outline-info",
+        '.btn-bg-theme':        "btn-dark",
+        '.btn-border-theme':    "border-light",
+        'a':                    "link-info",
+        '.card':                "text-white bg-gray-dark",
+        'svg':                  "svg-dark",
+        'code':                 "text-warning",
+        '.img-card-body':       "bg-gray-darker"
+    };
+
     if (switcher.checked) {
-        $('body').addClass("text-white bg-dark");
-        $('.modal-content').addClass("text-white bg-gray-dark border-dark");
-        $('input[type="search"]').addClass("text-white bg-gray-darkest border-dark");
-        $('.switch').addClass("border-light bg-dark");
-        $('.btn-bg-theme').addClass("btn-dark");
-        $('.btn-border-theme').addClass("border-light");
-        $('a').addClass("link-light");
-        $('.card').addClass("text-white bg-gray-dark");
-        $('svg').addClass("svg-dark");
-        $('code').addClass("text-warning");
         $('#theme_switch_label').text("Dark theme");
-        $('.img-card-body').addClass("bg-gray-darker");
+        for (const selector in theme_classes) {
+            $(selector).addClass(theme_classes[selector]);
+        }
     } else {
-        $('body').removeClass("text-white bg-dark");
-        $('.modal-content').removeClass("text-white bg-gray-dark border-dark");
-        $('input[type="search"]').removeClass("text-white bg-gray-darkest border-dark");
-        $('.switch').removeClass("border-light bg-dark");
-        $('.btn-bg-theme').removeClass("btn-dark");
-        $('.btn-border-theme').removeClass("border-light");
-        $('a').removeClass("link-light");
-        $('.card').removeClass("text-white bg-gray-dark");
-        $('svg').removeClass("svg-dark");
-        $('code').removeClass("text-warning");
         $('#theme_switch_label').text("Light theme");
-        $('.img-card-body').removeClass("bg-gray-darker");
+        for (const selector in theme_classes) {
+            $(selector).removeClass(theme_classes[selector]);
+        }
     }
 }
 
