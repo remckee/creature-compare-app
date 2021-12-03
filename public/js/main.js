@@ -14,6 +14,7 @@ function updateTheme() {
         'body':                 "text-white bg-dark",
         '.modal-content':       "text-white bg-gray-dark border-dark",
         'input[type="search"]': "text-white bg-gray-darkest border-dark",
+        '.clear-btn':           "btn-dark",
         '.switch':              "border-light bg-dark btn-outline-info",
         '.btn-bg-theme':        "btn-dark",
         '.btn-border-theme':    "border-light",
@@ -58,7 +59,7 @@ function getState() {
 }
 
 
-$(document).ready(function(){
+function setTheme() {
     $('.btn-close').addClass("btn-bg-theme btn-border-theme");
     
     // set the state of the switch based on value in local storage, then update the theme
@@ -67,5 +68,22 @@ $(document).ready(function(){
         document.getElementById("theme_switch").checked = state;
     }
     updateTheme();
+}
+
+
+function clearInput(el) {
+    el.val("");
+}
+
+
+$(document).ready(function(){
+    setTheme();
+    
+    // click handler for clear button
+    $(".clear-btn").click(function (event) {
+        var btn_id =  event.target.parentNode.id;
+        var input_parent = $(`#${btn_id}`).parent();
+        clearInput(input_parent.children(".searchbox"));
+    });
 });
 
