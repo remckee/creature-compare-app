@@ -14,6 +14,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const moment = require('moment');
+const { body } = require('express-validator');
 
 exphbs.create({partialsDir: 'views/partials/'})
 app.engine('.hbs', exphbs.engine({extname: '.hbs'}));
@@ -399,8 +400,13 @@ app.get('/', (req, res, next) => {
 });
 
 
-app.post('/results', (req, res) => {
+app.post(
+    '/results',
+    body('searchbox_1_title').not().isEmpty().trim().escape(),
+    body('searchbox_2_title').not().isEmpty().trim().escape(),
+    (req, res) => {
     let data = req.body;
+
     var results = {
         "creatures": 
         [{
