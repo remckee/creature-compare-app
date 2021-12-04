@@ -6,9 +6,9 @@
 "use strict";
 
 
-function updateTheme() {
+function update_theme() {
     var switcher = document.getElementById("theme_switch");
-    storeState(switcher);
+    store_state(switcher);
 
     var theme_classes = {
         'body':                 "text-white bg-dark",
@@ -39,11 +39,11 @@ function updateTheme() {
 }
 
 
-$("#theme_switch").change(updateTheme);
+$("#theme_switch").change(update_theme);
 
 
 // store current checked state (true/false) of theme slider in local storage
-function storeState(switcher) {
+function store_state(switcher) {
     var state = switcher.checked;
     var value = (state === true) ? 1 : 0;
     localStorage.setItem('checked', value);
@@ -51,7 +51,7 @@ function storeState(switcher) {
 
 
 // retrieve current checked state (true/false) of theme slider from local storage
-function getState() {
+function get_state() {
     var value = localStorage.getItem('checked');
     var val_parsed = parseInt(value);
     value = (Number.isInteger(val_parsed)) ? val_parsed : value;
@@ -59,31 +59,34 @@ function getState() {
 }
 
 
-function setTheme() {
+function set_theme() {
     $('.btn-close').addClass("btn-bg-theme btn-border-theme");
     
     // set the state of the switch based on value in local storage, then update the theme
-    var state = getState();
+    var state = get_state();
     if (state !== null) {
         document.getElementById("theme_switch").checked = state;
     }
-    updateTheme();
+    update_theme();
 }
 
 
-function clearInput(el) {
+function clear_input(el) {
     el.val("");
 }
 
 
-$(document).ready(function(){
-    setTheme();
-    
-    // click handler for clear button
-    $(".clear-btn").click(function (event) {
-        var btn_id =  event.target.parentNode.id;
-        var input_parent = $(`#${btn_id}`).parent();
-        clearInput(input_parent.children(".searchbox"));
+// Creates a click handler for the given clear button
+function clear_click_handler(btn_id, input_id) {
+    $("#"+btn_id).click(function () {
+        clear_input($("#"+input_id));
     });
+}
+
+
+$(document).ready(function(){
+    set_theme();
+    clear_click_handler("clear-btn-1", "searchbox_1");
+    clear_click_handler("clear-btn-2", "searchbox_2");
 });
 

@@ -27,7 +27,7 @@ to install the required modules. To start the app, run
 
     node app.js
     
-and then navigate to `http://localhost:3800/` in your browser.
+and then navigate to `http://localhost:3800/` in your browser. For best results, use Firefox or Chrome/Chromium.
 
 Starting the services
 -----------

@@ -40,8 +40,10 @@ domains.set('Protista', 'Eukaryota');
 
 // check if none of the taxon attributes are equal to value
 function check_results(results, value) {
-    return (results.creatures[0].taxon !== value && results.creatures[1].taxon !== value
-                      && results.creatures[0].img !== value && results.creatures[1].img !== value );
+    return (results.creatures[0].taxon !== value 
+                        && results.creatures[1].taxon !== value
+                        && results.creatures[0].img !== value 
+                        && results.creatures[1].img !== value );
 }
 
 function results_ready(results) {
@@ -77,40 +79,46 @@ function results_params(results) {
         creature_1_img   : get_img_data(results.creatures[0]),
         creature_2_img   : get_img_data(results.creatures[1]),
         script           : [{script_file: "main.js"}, {script_file: "results.js"}],
-        taxon_link       : {
-                              href: `https://en.wikipedia.org/wiki/${results.common_category.taxon_name}`,
-                              text: results.common_category.taxon_name,
-                              post_text: ""
-                           },
-        creature_1_link  : {
-                              href: `https://en.wikipedia.org/wiki/${results.creatures[0].name}`,
-                              text: `https://en.wikipedia.org/wiki/${results.creatures[0].name}`,
-                              post_text: ""
-                           },
-        creature_2_link  : {
-                              href: `https://en.wikipedia.org/wiki/${results.creatures[1].name}`,
-                              text: `https://en.wikipedia.org/wiki/${results.creatures[1].name}`,
-                              post_text: ""
-                           },
-        commons_link     : {
-                              href: 'https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License',
-                              text: 'Creative Commons Attribution-ShareAlike License',
-                              post_text: ""
-                           },
-        wikimedia_link   : {
-                              href: 'https://www.wikimediafoundation.org',
-                              text: 'Wikimedia Foundation, Inc.',
-                              post_text: ""
-                           },
+        taxon_link: 
+        {
+          href: `https://en.wikipedia.org/wiki/${results.common_category.taxon_name}`,
+          text: results.common_category.taxon_name,
+          post_text: ""
+        },
+        creature_1_link: 
+        {
+          href: `https://en.wikipedia.org/wiki/${results.creatures[0].name}`,
+          text: `https://en.wikipedia.org/wiki/${results.creatures[0].name}`,
+          post_text: ""
+        },
+        creature_2_link: 
+        {
+          href: `https://en.wikipedia.org/wiki/${results.creatures[1].name}`,
+          text: `https://en.wikipedia.org/wiki/${results.creatures[1].name}`,
+          post_text: ""
+        },
+        commons_link: 
+        {
+          href: 'https://en.wikipedia.org/wiki/Wikipedia:'+
+                    'Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License',
+          text: 'Creative Commons Attribution-ShareAlike License',
+          post_text: ""
+        },
+        wikimedia_link:
+        {
+          href: 'https://www.wikimediafoundation.org',
+          text: 'Wikimedia Foundation, Inc.',
+          post_text: ""
+        },
     };
     return obj;
 }
 
 
-function render_results(res, results) {
+function render_results(results) {
     if (!results.results_rendered) {
         results.results_rendered = true;
-        res.render('two-creature-results', results_params(results));
+        results.res.render('two-creature-results', results_params(results));
     }
 }
 
@@ -130,13 +138,15 @@ function get_error_msg(invalid_box) {
     var msg = `An unknown error occurred.`;
 
     if (invalid_box) {
-        msg = `Either there is no Wikipedia page for ${invalid_box}, or its page is not formatted as expected or does not name a valid biological organism.`;
+        msg = `Either there is no Wikipedia page for ${invalid_box}, `+
+            `or its page is not formatted as expected or `+
+            `does not name a valid biological organism.`;
     }
     return msg;
 }
 
 
-function render_error(res, results, error_ps, error_msg) {
+function render_error(results, error_ps, error_msg) {
     log_err_msg(error_msg);
     if (!results.results_rendered) {
         results.results_rendered = true;
@@ -146,8 +156,7 @@ function render_error(res, results, error_ps, error_msg) {
             script: [{script_file: "main.js"},
                       {script_file: "results.js"}]
         };
-
-        res.render('error', values);
+        results.res.render('error', values);
     }
 }
 
@@ -180,12 +189,12 @@ function add_url_prefix(url) {
 }
 
 
-const process_img = (results, res, ind, data) => {
+const process_img = (results, ind, data) => {
     var out_url = select_img_url(data);
 
     results.creatures[ind].img = add_url_prefix(out_url);
     if (results_valid(results) && results_ready(results)) {
-        render_results(res, results);
+        render_results(results);
     }
 }
 
@@ -272,13 +281,16 @@ const get_category = (arrs, results) => {
 }
 
 
-const process_HTML = (results, res, ind, data) => {
+const process_HTML = (results, ind, data) => {
     if (results.HTML.available === false) {
-        render_error(res, results, [{details: 'Unable to connect to HTML scraper service.'}], "Connect Error");
+        render_error(results, 
+            [{details: 'Unable to connect to HTML scraper service.'}], "Connect Error");
     } else {
         var taxon = get_taxon(data, results.creatures[ind].name);
 
-        if (results_valid(results) && Array.isArray(taxon) && taxon[0] === 'Scientific classification') {
+        if (results_valid(results) 
+                && Array.isArray(taxon) 
+                && taxon[0] === 'Scientific classification') {
             split_arr_els(taxon, /:?\t/);
 
             results.creatures[ind].taxon = taxon;
@@ -288,15 +300,16 @@ const process_HTML = (results, res, ind, data) => {
             }
 
             if (results_valid(results) && results_ready(results)) {
-                render_results(res, results);
+                render_results(results);
             }
             
         } else {
             results.creatures[ind].taxon = false;
             results.common_category = {category: false, taxon_name: false};
-            render_error(res, results, 
+            render_error(results, 
                 [
-                    {details: `Sorry, your query for "${results.creatures[0].name}" and "${results.creatures[1].name}" returned 0 results.`},
+                    {details: `Sorry, your query for "${results.creatures[0].name}" `+
+                        `and "${results.creatures[1].name}" returned 0 results.`},
                     {details: "Please check whether you entered everything correctly."},
                     {details: get_error_msg(get_invalid_input(results.creatures))}
                 ],
@@ -315,26 +328,26 @@ function log_err_msg(msg) {
 }
 
 
-function process_connect_error(results, funct, res, ind, error_msg, service) {
+function process_connect_error(results, ind, service_data, error_msg) {
     error_msg = 'Connect Error: ' + error_msg;
     console.log(error_msg);
-    results[`${service}`].available = false;
+    results[`${service_data.name}`].available = false;
     
-    if (service=='Img') {
+    if (service_data.name=='Img') {
         results.creatures[ind].img = "";
     } else {
-        funct(results, res, ind, {});
+        service_data.funct(results, ind, {});
     }
 }
 
 
-function call_service(results, res, req, ind, server_port, funct, service, protocol) {
-    if ((results[`${service}`].available !== false)) {
+function call_service(results, req, ind, service_data) {
+    if ((results[`${service_data.name}`].available !== false)) {
         var client = new WebSocketClient();
 
         // if connection fails, log an error
         client.on('connectFailed', function(error) {
-            process_connect_error(results, funct, res, ind, error.toString(), service);
+            process_connect_error(results, ind, service_data, error.toString());
             return;
         });
 
@@ -342,14 +355,14 @@ function call_service(results, res, req, ind, server_port, funct, service, proto
             // can remove below line, I just thought it was helpful to know it was working
             console.log('WebSocket Client Connected');
             connection.on('error', function(error) {
-                process_connect_error(results, funct, res, ind, error.toString(), service);
+                process_connect_error(results, ind, service_data, error.toString());
                 return;
             });
 
             // when a message from the server is recieved
             connection.on('message', function (data) {
                 console.log('Received reply: \n%s', data);
-                funct(results, res, ind, data);
+                service_data.funct(results, ind, data);
                 connection.close();
                 return data;
             });
@@ -364,10 +377,10 @@ function call_service(results, res, req, ind, server_port, funct, service, proto
             sendUrl(req);
         });
 
-        if (protocol=="") {
-            client.connect(`ws://localhost:${server_port}`);
+        if (service_data.protocol=='') {
+            client.connect(`ws://localhost:${service_data.port}`);
         } else {
-            client.connect(`ws://localhost:${server_port}`, protocol);
+            client.connect(`ws://localhost:${service_data.port}`, service_data.protocol);
         }
     }
 }
@@ -434,20 +447,38 @@ app.post(
         {
             available: null
         },
-        "results_rendered": false
+        "results_rendered": false,
+        "res": res
     };
+    
+    var html_data = 
+    {
+        name: 'HTML',
+        port: 8080,
+        funct: process_HTML,
+        protocol: 'echo-protocol'
+    };
+    
+    var img_data =
+    {
+        name: 'Img',
+        port: 5051,
+        funct: process_img,
+        protocol: ''
+    };
+    
     
     for (var i = 0; i < 2 && results_valid(results); i+=1) {
         // call HTML scraper
         if (results_valid(results)) {
-            var req = {"url" : results.creatures[i].url};
-            call_service(results, res, req, i, 8080, process_HTML, "HTML", 'echo-protocol');
+            var request = {"url" : results.creatures[i].url};
+            call_service(results, request, i, html_data);
         }
 
         // call Image scraper
         if (results_valid(results)) {
-            var req = {"URL" : results.creatures[i].url};
-            call_service(results, res, req, i, 5051, process_img, "Img", '');
+            var request = {"URL" : results.creatures[i].url};
+            call_service(results, request, i, img_data);
         }
     }
 

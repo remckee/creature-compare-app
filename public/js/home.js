@@ -7,7 +7,7 @@
 
 // Store a title cased version of the user input 
 /// in the hidden form field with the given id
-function storeTitleCase(id, title) {
+function store_title_case(id, title) {
     var page_title = title.toLowerCase();
     var first_let = page_title.charAt(0).toUpperCase();
     page_title = page_title.replace(page_title.charAt(0), first_let);
@@ -15,15 +15,15 @@ function storeTitleCase(id, title) {
     $(`#${id}`).val(page_title); 
 };
 
-function processForm(event) {
+function process_form(event) {
     var search_box_1 = $('#searchbox_1').val();
     var search_box_2 = $('#searchbox_2').val();
-    storeTitleCase("searchbox_1_title", search_box_1);
-    storeTitleCase("searchbox_2_title", search_box_2);
+    store_title_case("searchbox_1_title", search_box_1);
+    store_title_case("searchbox_2_title", search_box_2);
 }
 
 
-function setDatalists() {
+function set_datalists() {
     var search_box_1 = $('#searchbox_1');
     var search_box_2 = $('#searchbox_2');
     
@@ -33,7 +33,10 @@ function setDatalists() {
     var val_1 = search_box_1.val().toLowerCase();
     var val_2 = search_box_2.val().toLowerCase();
     
-    var org_list = ["Wombat", "Rabbit", "Hawaiian honeycreeper", "Raccoon", "Quaking aspen", "Lungwort lichen", "Cyanobacteria", "E coli", "Vine maple", "Capybara"];
+    var org_list = [
+                    "Wombat", "Rabbit", "Hawaiian honeycreeper", 
+                    "Raccoon", "Quaking aspen", "Lungwort lichen", 
+                    "Cyanobacteria", "E coli", "Vine maple", "Capybara"];
     org_list.sort();
     var org_list_len = org_list.length;
     var datalist = $('#suggestions');
@@ -51,22 +54,22 @@ function setDatalists() {
 
 
 // create modal object and set up click handler for info modal button
-function setupInfoModal() {
-    var infoModal = new bootstrap.Modal(document.getElementById('info-modal'), {
+function setup_info_modal() {
+    var info_modal = new bootstrap.Modal(document.getElementById('info-modal'), {
         backdrop: false,
         keyboard: true
     });  
 
     $("#info-btn").click(function () {
-        infoModal.show();
+        info_modal.show();
     });
 }
 
 
 $(document).ready(function(){
-    $(".searchbox").change(setDatalists);
-    $("#user-input-form").submit(processForm);
-    setupInfoModal();
-    setDatalists();
+    $(".searchbox").change(set_datalists);
+    $("#user-input-form").submit(process_form);
+    setup_info_modal();
+    set_datalists();
 });
 
